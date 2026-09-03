@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsyRunner - KSM Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateX(-5px);
+        }
+
+        section {
+            background: white;
+            margin: 40px 0;
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        section h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .project-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-card h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .project-description {
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        /* 작업 내부 섹션 제목 */
+        .project-section-title {
+            color: #764ba2;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 사진 갤러리 (작업 카드 내부) */
+        .project-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .project-photo-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .project-photo-item:hover {
+            transform: scale(1.05);
+        }
+
+        .project-photo-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 동영상 (작업 카드 내부) */
+        .project-video {
+            margin-bottom: 20px;
+        }
+
+        .project-video video {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* YouTube 영상 (작업 카드 내부) */
+        .project-youtube {
+            margin-bottom: 20px;
+        }
+
+        .project-youtube-video {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 비율 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-youtube-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 모달 (확대된 이미지 보기) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 900px;
+            margin-top: 50px;
+            animation: zoomIn 0.3s;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); }
+            to { transform: scale(1); }
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .project-photos {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                gap: 10px;
+            }
+
+            nav a {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="game.html" class="active">게임</a>
+            <a href="vr.html">가상현실</a>
+            <a href="etc.html">ETC</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <a href="game.html" class="back-button">← 게임 목록으로 돌아가기</a>
+
+        <section>
+            <div class="project-card">
+                <h3>ANOMONA 404</h3>
+                <div class="project-description">
+                    2026 고랑과 이랑 전시 게임입니다. 앞선 플레이어의 기록을 보며 세상의 진실을 깨닫고, 그 플레이어를 따라갈지, 자신만의 길을 나아갈지 정하는 게임입니다.
+                    최초로 타 학과와 협업하여 개발한 게임으로 팀장으로서 게임 기획 및 메인 개발자, 서브 아트를 맡았습니다.
+                </div>
+
+                <!-- 사진 섹션 -->
+                <div class="project-section-title">📸 사진</div>
+                <div class="project-photos">
+                    <div class="project-photo-item" onclick="openModal('images/game5/preview_img.jpg')">
+                        <img src="images/game5/preview_img.jpg" alt="메인 화면">
+                    </div>
+
+                    <div class="project-photo-item" onclick="openModal('images/game5/Desktop Screenshot 2026.09.03 - 12.53.14.17.png')">
+                        <img src="images/game5/Desktop Screenshot 2026.09.03 - 12.53.14.17.png" alt="게임 플레이 화면">
+                    </div>
+
+                    <div class="project-photo-item" onclick="openModal('images/game5/Unreal Engine 5 Screenshot 2026.05.26 - 21.18.08.31.png')">
+                        <img src="images/game5/Unreal Engine 5 Screenshot 2026.05.26 - 21.18.08.31.png" alt="배경 제작">
+                    </div>
+
+                    <div class="project-photo-item" onclick="openModal('images/game4/6.png')">
+                        <img src="images/game4/6.png" alt="AI 행동 로직 제작">
+                    </div>
+                </div>
+                
+                <!-- YouTube 섹션 -->
+                <div class="project-section-title">📺 YouTube</div>
+                <div class="project-youtube">
+                    <div class="project-youtube-video">
+                        <iframe src="https://youtu.be/BL9yCWJi2Fc" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 모달 (확대된 이미지) -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        // 모달 열기
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageSrc;
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
